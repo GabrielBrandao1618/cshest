@@ -4,7 +4,7 @@ using storage;
 
 internal class Program {
   public static void Main(string[] args) {
-    Lsm lsm = new("examples/.data", "examples/.index", 4);
+    Lsm lsm = new("examples/.data", "examples/.index", 5);
     lsm.Set("key1", "Apple");
     lsm.Set("key2", "Grape");
     lsm.Set("key3", "Orange");

@@ -23,7 +23,7 @@ public class Lsm {
   }
   public void Set(string key, string val) {
     memTable[key] = val;
-    if(memTable.Count > flushThreshold) {
+    if(memTable.Count >= flushThreshold) {
       Flush();
     }
   }
