@@ -5,13 +5,12 @@ using storage;
 internal class Program {
   public static void Main(string[] args) {
     Lsm lsm = new("examples/.data", "examples/.index", 5);
-    lsm.Set("key1", "Apple");
-    lsm.Set("key2", "Grape");
-    lsm.Set("key3", "Orange");
-    lsm.Set("key4", "Banana");
-    lsm.Set("key5", "Peach");
 
-    string? found = lsm.Get("key1");
+    AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => {
+      lsm.Flush();
+    };
+
+    string? found = lsm.Get("key3");
 
     Console.WriteLine(found);
   }
