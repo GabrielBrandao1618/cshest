@@ -14,7 +14,7 @@ public class SSTable {
       Directory.CreateDirectory(indexDirPath);
     }
   }
-  public void WriteData(Dictionary<string, string> data) {
+  public async void WriteData<T>(T data) where T: IDictionary<string, string> {
     string filename = DateTime.Now.Ticks.ToString();
     string filepath = $"{dataDirPath}/{filename}.data";
     File.Create(filepath).Close();
@@ -24,8 +24,9 @@ public class SSTable {
     long currentFilePosition = 0;
     foreach (var item in data) {
       index[item.Key] = currentFilePosition;
-      w.WriteLine(item.Value);
-      currentFilePosition += item.Value.Length;
+      await w.WriteLineAsync(item.Value);
+      // The +1 represents the '\n' char since we are writing line
+      currentFilePosition += item.Value.Length + 1;
     }
     w.Close();
     SaveIndex(filename, index);
@@ -66,8 +67,10 @@ public class SSTable {
       var index = ParseIndex(correspondingIndexPath);
       if(index.ContainsKey(key)) {
         long offset = index[key];
-        StreamReader r = new(filepath);
-        r.BaseStream.Position = offset;
+        FileStream f = new(filepath, FileMode.Open);
+        f.Seek(offset, SeekOrigin.Begin);
+        StreamReader r = new(f);
+        Console.WriteLine($"Offset: {offset}");
         string? value = r.ReadLine();
         if(value != null) {
           return value;

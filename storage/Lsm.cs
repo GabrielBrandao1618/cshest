@@ -1,7 +1,7 @@
 namespace storage;
 
-public class Lsm {
-  Dictionary<string, string> memTable = [];
+public class Lsm: IDisposable {
+  SortedDictionary<string, string> memTable = [];
   readonly SSTable ssTable;
   readonly int flushThreshold;
 
@@ -28,7 +28,14 @@ public class Lsm {
     }
   }
   public void Flush() {
-    ssTable.WriteData(memTable);
-    memTable = [];
+    if(memTable.Count > 0) {
+      ssTable.WriteData(memTable);
+      memTable = [];
+    }
+  }
+
+  public void Dispose() {
+    Flush();
+    GC.SuppressFinalize(this);
   }
 }
